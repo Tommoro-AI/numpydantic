@@ -137,6 +137,19 @@ class JsonDict(BaseModel):
             value = value.to_array_input()
         return value
 
+    def reshape_input(self, value: T, shape: tuple[int, ...]) -> T:
+        if value.shape != shape:
+            try:
+                value = value.reshape(shape)
+            except ValueError:
+                warnings.warn(
+                    f"Input data has shape {value.shape}, but roundtrip form specifies {shape},"
+                    f"and {value.shape} can't be cast to {shape}. "
+                    f"Attempting to proceed with validation without reshaping.",
+                    stacklevel=1,
+                )
+        return value
+
 
 class MarkedJson(BaseModel):
     """
@@ -282,7 +295,10 @@ class Interface(ABC, Generic[T]):
         When an array contains an object, get the dtype of the object contained
         by the array.
         """
-        return type(array.ravel()[0])
+        if len(array) == 0:
+            return object
+        else:
+            return type(array.ravel()[0])
 
     def validate_dtype(self, dtype: DtypeType) -> bool:
         """

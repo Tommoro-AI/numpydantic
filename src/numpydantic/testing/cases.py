@@ -96,6 +96,9 @@ SHAPE_CASES = (
         marks={"scalar"},
         passes=False,
     ),
+    ValidationCase(
+        annotation_shape=("*", 3), shape=(0, 3), id="zero-length", passes=True
+    ),
 )
 """
 Base Shape cases
@@ -305,3 +308,5 @@ ALL_CASES_PASSING = merged_product(
 """
 Merged product of all cases, but only those that pass
 """
+
+ZERO_LENGTH_CASES_PASSING = [c for c in ALL_CASES_PASSING if "zero-length" in c.id]

@@ -33,11 +33,14 @@ class DaskJsonDict(JsonDict):
     name: str
     chunks: Iterable[tuple[int, ...]]
     dtype: str
+    shape: tuple[int, ...] | None = None
     value: list
 
     def to_array_input(self) -> DaskArray:
         """Construct a dask array"""
         np_array = np.array(self.value, dtype=self.dtype)
+        if self.shape is not None and np_array.shape != self.shape:
+            np_array = self.reshape_input(np_array, self.shape)
         array = from_array(
             np_array,
             name=self.name,
@@ -121,6 +124,8 @@ class DaskInterface(Interface):
         """
         np_array = np.array(array)
         as_json = np_array.tolist()
+        if not isinstance(as_json, list):
+            as_json = [as_json]
         if info.round_trip:
             as_json = DaskJsonDict(
                 type=cls.name,
@@ -128,5 +133,6 @@ class DaskInterface(Interface):
                 name=array.name,
                 chunks=array.chunks,
                 dtype=str(np_array.dtype),
+                shape=array.shape,
             )
         return as_json
