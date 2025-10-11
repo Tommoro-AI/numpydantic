@@ -48,7 +48,6 @@ def validate_dtype(dtype: Any, target: DtypeType) -> bool:
             str,
         )
     else:
-        # if the target is just the
         # try to match as any subclass, if target is a class
         try:
             valid = issubclass(dtype, target)

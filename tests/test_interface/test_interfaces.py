@@ -23,7 +23,7 @@ def _test_roundtrip(source: BaseModel, target: BaseModel):
     if isinstance(source.array, (np.ndarray, ZarrArray)):
         assert np.array_equal(target.array, np.array(source.array))
     elif isinstance(source.array, da.Array):
-        if target.array.dtype == object:
+        if target.array.dtype == object and len(source.array.ravel()) > 0:
             # object equality doesn't really work well with dask
             # just check that the types match
             target_type = type(target.array.ravel()[0].compute())
@@ -131,8 +131,6 @@ def test_roundtrip_json_zero_length(case, tmp_output_dir_func):
         pytest.skip("Zarr does not support reshaping arrays")
 
     array = case.array(path=tmp_output_dir_func)
-    if len(array) == 0 and "model" in case.id.lower():
-        pytest.skip("Cant reconstruct objects when there are no objects in the array")
     instance = case.model(array=array)
 
     dumped_json = instance.model_dump_json(round_trip=True)
