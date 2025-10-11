@@ -135,6 +135,23 @@ DaskJsonDict.is_valid(roundtrip_json)
 NumpyJsonDict.is_valid(roundtrip_json)
 ```
 
+````{note} Zero-length dimensions
+Zero-length dimensions are a special case in many array frameworks.
+When serializing to JSON, in most cases, zero-length dimensions are lost.
+
+Numpy has some odd edge cases with zero-length arrays,
+e.g. an empty array can have a non-zero shape:
+
+```python
+>>> np.random.rand(0,3)
+array([], shape=(0, 3), dtype=float64)
+```
+
+When round-tripping, if the array framework supports reshape operations,
+the `shape` of the array will be preserved in the JSON form,
+and during validation the interface will attempt to reshape the input array to the stored shape.
+````
+
 #### Controlling paths
 
 When possible, the full content of the array is omitted in favor

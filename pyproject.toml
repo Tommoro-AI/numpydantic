@@ -147,6 +147,7 @@ markers = [
     "union: union dtypes",
     "pipe_union: union dtypes specified with a pipe",
     "scalar: scalar values",
+    "model: dtype annotatiosn are a pydantic model"
 ]
 
 [tool.black]
@@ -190,7 +191,7 @@ select = [
     "T100",
 ]
 ignore = [
-    "ANN101", "ANN102", "ANN401", "ANN204",
+    "ANN401", "ANN204",
     # explicit strict arg for zip
     "B905",
     # builtin type annotations

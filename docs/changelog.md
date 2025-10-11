@@ -1,5 +1,27 @@
 # Changelog
 
+## Upcoming
+
+**Bugfix**
+
+- [#60](https://github.com/p2p-ld/numpydantic/issues/60), [#61](https://github.com/p2p-ld/numpydantic/pulls/61) - 
+  Support the edge case of leading zero-length dimensions while round tripping to JSON
+
+**Added*
+
+- [#61](https://github.com/p2p-ld/numpydantic/pulls/61) -
+  Serialize `shape` in `round_trip` mode, and attempt to reshape when validating from round trip.
+  This supports the edge case of a leading zero-length dimension.
+- Since the `dtype` of an array of objects can't be detected when there are no objects,
+  allow `Any` to be used in validation to indicate that the dtype could be anything/is unknowable.
+
+**Testing**
+
+- Use static lists rather than generators in test case `merged_product` collections
+  rather than a generator to avoid the footgun of exhausting a generator once,
+  and then on the next iteration it appears as an empty collection,
+  which would cause tests to invisibly not be run.
+
 ## 1.*
 
 ### 1.6.*
