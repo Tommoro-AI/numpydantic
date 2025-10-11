@@ -165,16 +165,32 @@ DTYPE_CASES = [
         marks={"np_str", "str", "tuple"},
     ),
     ValidationCase(
-        annotation_dtype=BasicModel, dtype=BasicModel, passes=True, id="model-model"
+        annotation_dtype=BasicModel,
+        dtype=BasicModel,
+        passes=True,
+        id="model-model",
+        marks={"model"},
     ),
     ValidationCase(
-        annotation_dtype=BasicModel, dtype=BadModel, passes=False, id="model-badmodel"
+        annotation_dtype=BasicModel,
+        dtype=BadModel,
+        passes=False,
+        id="model-badmodel",
+        marks={"model"},
     ),
     ValidationCase(
-        annotation_dtype=BasicModel, dtype=int, passes=False, id="model-int"
+        annotation_dtype=BasicModel,
+        dtype=int,
+        passes=False,
+        id="model-int",
+        marks={"model"},
     ),
     ValidationCase(
-        annotation_dtype=BasicModel, dtype=SubClass, passes=True, id="model-subclass"
+        annotation_dtype=BasicModel,
+        dtype=SubClass,
+        passes=True,
+        id="model-subclass",
+        marks={"model"},
     ),
     ValidationCase(
         annotation_dtype=UNION_TYPE,

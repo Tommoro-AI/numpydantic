@@ -1,5 +1,11 @@
 # Changelog
 
+## Upcoming
+
+- [#60](https://github.com/p2p-ld/numpydantic/issues/60) - 
+  Serialize `shape` in `round_trip` mode, and attempt to reshape when validating from round trip.
+  This supports the edge case of a leading zero-length dimension.
+
 ## 1.*
 
 ### 1.6.*

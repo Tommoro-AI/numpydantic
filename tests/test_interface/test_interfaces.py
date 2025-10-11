@@ -122,7 +122,7 @@ def test_interface_roundtrip_json(dtype_by_interface, tmp_output_dir_func):
 
 @pytest.mark.serialization
 @pytest.mark.parametrize("case", ZERO_LENGTH_CASES_PASSING)
-def test_roundtrip_zero_length(case, tmp_output_dir_func):
+def test_roundtrip_json_zero_length(case, tmp_output_dir_func):
     """
     Arrays with zero-length dimensions should roundtrip to and from json,
     when supported by the array framework

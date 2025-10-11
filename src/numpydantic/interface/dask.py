@@ -78,20 +78,25 @@ class DaskInterface(Interface):
         Try and coerce dicts that should be model objects into the model objects
         """
         try:
-            if issubclass(self.dtype, BaseModel) and isinstance(
-                array.reshape(-1)[0].compute(), dict
-            ):
+            if issubclass(self.dtype, BaseModel):
+                flat_array = array.reshape(-1)
+                if len(flat_array) == 0:
+                    return array
 
-                def _chunked_to_model(array: np.ndarray) -> np.ndarray:
-                    def _vectorized_to_model(item: Union[dict, BaseModel]) -> BaseModel:
-                        if not isinstance(item, self.dtype):
-                            return self.dtype(**item)
-                        else:  # pragma: no cover
-                            return item
+                if isinstance(flat_array[0].compute(), dict):
 
-                    return np.vectorize(_vectorized_to_model)(array)
+                    def _chunked_to_model(array: np.ndarray) -> np.ndarray:
+                        def _vectorized_to_model(
+                            item: Union[dict, BaseModel],
+                        ) -> BaseModel:
+                            if not isinstance(item, self.dtype):
+                                return self.dtype(**item)
+                            else:  # pragma: no cover
+                                return item
 
-                array = array.map_blocks(_chunked_to_model, dtype=self.dtype)
+                        return np.vectorize(_vectorized_to_model)(array)
+
+                    array = array.map_blocks(_chunked_to_model, dtype=self.dtype)
         except TypeError:
             # fine, dtype isn't a type
             pass
@@ -99,7 +104,11 @@ class DaskInterface(Interface):
 
     def get_object_dtype(self, array: NDArrayType) -> DtypeType:
         """Dask arrays require a compute() call to retrieve a single value"""
-        return type(array.reshape(-1)[0].compute())
+        flat_array = array.reshape(-1)
+        if len(flat_array) == 0:
+            return Any
+        else:
+            return type(flat_array[0].compute())
 
     @classmethod
     def enabled(cls) -> bool:
