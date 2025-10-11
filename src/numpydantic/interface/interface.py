@@ -137,12 +137,13 @@ class JsonDict(BaseModel):
             value = value.to_array_input()
         return value
 
-    def reshape_input(self, value: T, shape: tuple[int, ...]) -> T:
+    @staticmethod
+    def reshape_input(value: T, shape: tuple[int, ...]) -> T:
         """
         If a `reshape` value is present on the array, and the array shape doesn't match,
         attempt to reshape it.
         """
-        if hasattr(self, "shape") and value.shape != shape:
+        if value.shape != shape:
             try:
                 value = value.reshape(shape)
             except ValueError:
