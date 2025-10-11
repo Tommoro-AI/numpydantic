@@ -29,7 +29,7 @@ class NumpyJsonDict(JsonDict):
     dtype: str
     value: list
     # allow shape to be None for backwards compatibility.
-    shape: tuple[int, ...] | None = None
+    shape: Union[tuple[int, ...], None] = None
 
     def to_array_input(self) -> ndarray:
         """

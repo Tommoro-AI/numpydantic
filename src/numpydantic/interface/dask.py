@@ -33,7 +33,7 @@ class DaskJsonDict(JsonDict):
     name: str
     chunks: Iterable[tuple[int, ...]]
     dtype: str
-    shape: tuple[int, ...] | None = None
+    shape: Union[tuple[int, ...], None] = None
     value: list
 
     def to_array_input(self) -> DaskArray:
