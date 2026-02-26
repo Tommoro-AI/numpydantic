@@ -3,7 +3,7 @@ Interface to support treating videos like arrays using OpenCV
 """
 
 from pathlib import Path
-from typing import Any, Literal
+from typing import Any, Literal, TypeAlias
 
 import numpy as np
 from pydantic_core.core_schema import SerializationInfo
@@ -14,9 +14,12 @@ from numpydantic.interface.interface import Interface
 try:
     import cv2
     from cv2 import VideoCapture
+
+    _CaptureUnion: TypeAlias = VideoCapture | None
 except ImportError:  # pragma: no cover
     cv2 = None
     VideoCapture = None
+    _CaptureUnion: TypeAlias = None
 
 VIDEO_EXTENSIONS = (".mp4", ".avi", ".mov", ".mkv")
 
@@ -39,7 +42,7 @@ class VideoProxy:
     Passthrough proxy class to interact with videos as arrays
     """
 
-    def __init__(self, path: Path | None = None, video: VideoCapture | None = None):
+    def __init__(self, path: Path | None = None, video: _CaptureUnion = None):
         if path is None and video is None:  # pragma: no cover
             raise ValueError(
                 "Need to either supply a path or an opened VideoCapture object"
