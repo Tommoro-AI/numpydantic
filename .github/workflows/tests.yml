@@ -37,8 +37,9 @@ jobs:
             python-version: "3.11"
           - platform: "macos-latest"
             python-version: "3.12"
+          # mac struggles to build numcodecs with 3.14, from zarr<3
           - platform: "macos-latest"
-            python-version: "3.13"
+            python-version: "3.14"
           - platform: "windows-latest"
             python-version: "3.11"
           - platform: "windows-latest"
