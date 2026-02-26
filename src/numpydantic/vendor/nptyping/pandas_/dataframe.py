@@ -24,7 +24,7 @@ SOFTWARE.
 
 import inspect
 from abc import ABC
-from typing import Any, Tuple
+from typing import Any
 
 import numpy as np
 
@@ -61,7 +61,7 @@ class DataFrameMeta(
     such as instance checking.
     """
 
-    __args__: Tuple[Structure]
+    __args__: tuple[Structure]
     _parameterized: bool
 
     def __instancecheck__(  # pylint: disable=bad-mcs-method-argument
@@ -86,7 +86,7 @@ class DataFrameMeta(
         )
         return check_structure(structured_dtype, structure, dtype_per_name)
 
-    def _get_item(cls, item: Any) -> Tuple[Structure]:
+    def _get_item(cls, item: Any) -> tuple[Structure]:
         if item is Any:
             return (Any,)
         cls._check_item(item)

@@ -27,10 +27,6 @@ from inspect import getframeinfo
 from types import FrameType
 from typing import (
     Any,
-    Dict,
-    Optional,
-    Set,
-    Tuple,
     TypeVar,
 )
 
@@ -60,9 +56,9 @@ class FinalMeta(ABCMeta):
     allowed to use that concrete meta class.
     """
 
-    _name_per_meta_cls: Dict[type, Optional[str]] = {}
+    _name_per_meta_cls: dict[type, str | None] = {}
 
-    def __init_subclass__(cls, implementation: Optional[str] = None) -> None:
+    def __init_subclass__(cls, implementation: str | None = None) -> None:
         # implementation is made Optional here, to allow other meta classes to
         # inherit.
         cls._name_per_meta_cls[cls] = implementation
@@ -110,11 +106,11 @@ class SubscriptableMeta(ABCMeta):
     new type is returned for every unique set of arguments.
     """
 
-    _all_types: Dict[Tuple[type, Tuple[Any, ...], tuple[type, ...]], type] = {}
+    _all_types: dict[tuple[type, tuple[Any, ...], tuple[type, ...]], type] = {}
     _parameterized: bool = False
 
     @abstractmethod
-    def _get_item(cls, item: Any) -> Tuple[Any, ...]: ...  # pragma: no cover
+    def _get_item(cls, item: Any) -> tuple[Any, ...]: ...  # pragma: no cover
 
     def _get_module(cls, stack: FrameType, module: str) -> str:
         # The magic below makes Python's help function display a meaningful
@@ -127,7 +123,7 @@ class SubscriptableMeta(ABCMeta):
 
     def _get_additional_values(
         cls, item: Any  # pylint: disable=unused-argument
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         # This method is invoked after _get_item and right before returning
         # the result of __getitem__. It can be overridden to provide extra
         # values that are to be set as attributes on the new type.
@@ -148,7 +144,7 @@ class SubscriptableMeta(ABCMeta):
         return result
 
     def _create_type(
-        cls, args: Tuple[Any, ...], additional_values: Dict[str, Any]
+        cls, args: tuple[Any, ...], additional_values: dict[str, Any]
     ) -> type:
         key = (cls, args, tuple(type(a) for a in args))
         if key not in cls._all_types:
@@ -165,7 +161,7 @@ class ComparableByArgsMeta(ABCMeta):
     Makes a class comparable by means of its __args__.
     """
 
-    __args__: Tuple[Any, ...]
+    __args__: tuple[Any, ...]
 
     def __eq__(cls, other: Any) -> bool:
         return (
@@ -191,8 +187,8 @@ class ContainerMeta(
     Base meta class for "containers" such as Shape and Structure.
     """
 
-    _known_expressions: Set[str] = set()
-    __args__: Tuple[str, ...]
+    _known_expressions: set[str] = set()
+    __args__: tuple[str, ...]
 
     @abstractmethod
     def _validate_expression(cls, item: str) -> None: ...  # pragma: no cover
@@ -200,7 +196,7 @@ class ContainerMeta(
     @abstractmethod
     def _normalize_expression(cls, item: str) -> str: ...  # pragma: no cover
 
-    def _get_item(cls, item: Any) -> Tuple[Any, ...]:
+    def _get_item(cls, item: Any) -> tuple[Any, ...]:
         if not isinstance(item, str):
             raise InvalidArgumentsError(
                 f"Unexpected argument of type {type(item)}, expecting a string."

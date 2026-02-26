@@ -24,17 +24,11 @@ SOFTWARE.
 
 import re
 from collections import Counter, defaultdict
+from collections.abc import Generator, Mapping
 from difflib import get_close_matches
 from typing import (
     TYPE_CHECKING,
     Any,
-    Dict,
-    Generator,
-    List,
-    Mapping,
-    Tuple,
-    Type,
-    Union,
 )
 
 import numpy as np
@@ -53,7 +47,7 @@ if TYPE_CHECKING:
 
 
 def validate_structure_expression(
-    structure_expression: Union[StructureExpression, Any],
+    structure_expression: StructureExpression | Any,
 ) -> None:
     """
     Validate the given structure_expression and raise an InvalidStructureError
@@ -75,7 +69,7 @@ def validate_structure_expression(
 def check_structure(
     structured_dtype: np.dtype,  # type: ignore[type-arg]
     target: "Structure",
-    type_per_name: Dict[str, type],
+    type_per_name: dict[str, type],
 ) -> bool:
     """
     Check the given structured_dtype against the given target Structure and
@@ -91,7 +85,7 @@ def check_structure(
 
     # Add the wildcard to the lexicon. We want to do this here to keep
     # knowledge on wildcards in one place (this module).
-    type_per_name_with_wildcard: Dict[str, type] = {
+    type_per_name_with_wildcard: dict[str, type] = {
         **type_per_name,
         "*": object,
     }  # type: ignore[arg-type]
@@ -99,7 +93,7 @@ def check_structure(
     if target.has_wildcard():
         # Check from the Target's perspective. All fields in the Target should be
         # in the subject.
-        def iterator() -> Generator[Tuple[str, Tuple[np.dtype, int]], None, None]:  # type: ignore[type-arg] # pylint: disable=line-too-long
+        def iterator() -> Generator[tuple[str, tuple[np.dtype, int]], None, None]:  # type: ignore[type-arg] # pylint: disable=line-too-long
             for name_ in target.get_names():
                 yield name_, fields.get(name_)  # type: ignore[misc]
 
@@ -109,7 +103,7 @@ def check_structure(
         if set(target.get_names()) != set(fields.keys()):
             return False
 
-        def iterator() -> Generator[Tuple[str, Tuple[np.dtype, int]], None, None]:  # type: ignore[type-arg] # pylint: disable=line-too-long
+        def iterator() -> Generator[tuple[str, tuple[np.dtype, int]], None, None]:  # type: ignore[type-arg] # pylint: disable=line-too-long
             yield from fields.items()
 
     for name, dtype_tuple in iterator():
@@ -123,9 +117,9 @@ def check_structure(
 
 def _check_structure_field(
     name: str,
-    dtype_tuple: Tuple[np.dtype, int],  # type: ignore[type-arg]
+    dtype_tuple: tuple[np.dtype, int],  # type: ignore[type-arg]
     target: "Structure",
-    type_per_name_with_wildcard: Dict[str, type],
+    type_per_name_with_wildcard: dict[str, type],
 ) -> bool:
     dtype = dtype_tuple[0]
     target_type_name = target.get_type(name)
@@ -149,7 +143,7 @@ def _check_structure_field(
 
 
 def check_type_names(
-    structure: "Structure", type_per_name: Dict[str, Type[object]]
+    structure: "Structure", type_per_name: dict[str, type[object]]
 ) -> None:
     """
     Check the given structure for any invalid type names in the given context
@@ -163,7 +157,7 @@ def check_type_names(
         check_type_name(type_, type_per_name)
 
 
-def check_type_name(type_name: str, type_per_name: Dict[str, Type[object]]) -> None:
+def check_type_name(type_name: str, type_per_name: dict[str, type[object]]) -> None:
     """
     Check if the given type_name is in type_per_name and raise a meaningful
     error if not.
@@ -209,7 +203,7 @@ def normalize_structure_expression(
 
 def create_name_to_type_dict(
     structure_expression: StructureExpression,
-) -> Dict[str, str]:
+) -> dict[str, str]:
     """
     Create a dict with a name as key and a type (str) as value from the given
     structure expression. Structure["x: Int, y: Float"] would yield
@@ -232,7 +226,7 @@ def _validate_structure_expression_contains_no_multiple_field_names(
     # Validate that there are not multiple occurrences of the same field names.
     matches = re.findall(_REGEX_FIELD, re.sub(r"\s*", "", structure_expression))
     field_name_combinations = [match[0].split(":")[0] for match in matches]
-    field_names: List[str] = []
+    field_names: list[str] = []
     for field_name_combination in field_name_combinations:
         field_name_combination_match = re.match(
             _REGEX_FIELD_NAMES_COMBINATION, field_name_combination
@@ -276,10 +270,10 @@ def _validate_sub_array_expressions(structure_expression: str) -> None:
 
 def _create_type_to_names_dict(
     structure_expression: StructureExpression,
-) -> Dict[str, List[str]]:
+) -> dict[str, list[str]]:
     # Create a dictionary with field names per type, sorted by type and then by
     # name.
-    names_per_type: Dict[str, List[str]] = defaultdict(list)
+    names_per_type: dict[str, list[str]] = defaultdict(list)
     for field_match in re.findall(_REGEX_FIELD, structure_expression):
         field_name_combination, field_type = field_match[0].split(_FIELD_TYPE_POINTER)
         field_name_combination_match = re.match(
@@ -303,7 +297,7 @@ def _create_type_to_names_dict(
     }
 
 
-def _type_to_names_dict_to_str(type_to_names_dict: Dict[str, List[str]]) -> str:
+def _type_to_names_dict_to_str(type_to_names_dict: dict[str, list[str]]) -> str:
     # Turn the given dict into a structure expression.
     field_strings = []
     for field_type, field_names in type_to_names_dict.items():

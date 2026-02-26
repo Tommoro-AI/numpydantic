@@ -23,7 +23,7 @@ SOFTWARE.
 """
 
 from abc import ABC
-from typing import Any, Dict
+from typing import Any
 
 from numpydantic.vendor.nptyping.base_meta_classes import ContainerMeta
 from numpydantic.vendor.nptyping.nptyping_type import NPTypingType
@@ -46,7 +46,7 @@ class ShapeMeta(ContainerMeta, implementation="Shape"):
     def _normalize_expression(cls, item: str) -> str:
         return normalize_shape_expression(item)
 
-    def _get_additional_values(cls, item: Any) -> Dict[str, Any]:
+    def _get_additional_values(cls, item: Any) -> dict[str, Any]:
         dim_strings = get_dimensions(item)
         dim_string_without_labels = remove_labels(dim_strings)
         return {"prepared_args": dim_string_without_labels}

@@ -24,7 +24,7 @@ SOFTWARE.
 
 import inspect
 from abc import ABC
-from typing import Any, Tuple
+from typing import Any
 
 import numpy as np
 
@@ -62,14 +62,14 @@ class NDArrayMeta(
     such as instance checking.
     """
 
-    __args__: Tuple[Shape, DType]
+    __args__: tuple[Shape, DType]
     _parameterized: bool
 
     @property
     def __module__(cls) -> str:
         return cls._get_module(inspect.currentframe(), "nptyping.ndarray")
 
-    def _get_item(cls, item: Any) -> Tuple[Any, ...]:
+    def _get_item(cls, item: Any) -> tuple[Any, ...]:
         cls._check_item(item)
         shape, dtype = cls._get_from_tuple(item)
         return shape, dtype
@@ -110,7 +110,7 @@ class NDArrayMeta(
         if len(item) > 2:
             raise InvalidArgumentsError(f"Unexpected argument {item[2]}.")
 
-    def _get_from_tuple(cls, item: Tuple[Any, ...]) -> Tuple[Shape, DType]:
+    def _get_from_tuple(cls, item: tuple[Any, ...]) -> tuple[Shape, DType]:
         # Return the Shape Expression and DType from a tuple.
         shape = cls._get_shape(item[0])
         dtype = cls._get_dtype(item[1])

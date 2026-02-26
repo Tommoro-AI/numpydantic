@@ -27,7 +27,7 @@ import re
 import string
 from abc import ABC
 from functools import lru_cache
-from typing import Any, Dict, Generic, List, Literal, TypeVar, Union
+from typing import Any, Generic, Literal, TypeVar
 
 from numpydantic.vendor.nptyping.base_meta_classes import ContainerMeta
 from numpydantic.vendor.nptyping.error import InvalidShapeError
@@ -55,7 +55,7 @@ class ShapeMeta(ContainerMeta, implementation="Shape"):
     def _normalize_expression(cls, item: str) -> str:
         return normalize_shape_expression(item)
 
-    def _get_additional_values(cls, item: Any) -> Dict[str, Any]:
+    def _get_additional_values(cls, item: Any) -> dict[str, Any]:
         dim_strings = get_dimensions(item)
         dim_string_without_labels = remove_labels(dim_strings)
         return {"prepared_args": dim_string_without_labels}
@@ -85,7 +85,7 @@ class Shape(NPTypingType, ABC, Generic[T], metaclass=ShapeMeta):
     prepared_args = ("*", "...")
 
 
-def validate_shape_expression(shape_expression: Union[ShapeExpression, Any]) -> None:
+def validate_shape_expression(shape_expression: ShapeExpression | Any) -> None:
     """
     CHANGES FROM NPTYPING: Allow ranges
     """
@@ -110,14 +110,14 @@ def validate_shape(shape: ShapeTuple, target: "Shape") -> bool:
     return _check_dimensions_against_shape(shape, target_shape)
 
 
-def _check_dimensions_against_shape(shape: ShapeTuple, target: List[str]) -> bool:
+def _check_dimensions_against_shape(shape: ShapeTuple, target: list[str]) -> bool:
     # Walk through the shape and test them against the given target,
     # taking into consideration variables, wildcards, etc.
 
     if len(shape) != len(target):
         return False
     shape_as_strings = (str(dim) for dim in shape)
-    variables: Dict[str, str] = {}
+    variables: dict[str, str] = {}
     for dim, target_dim in zip(shape_as_strings, target):
         if _is_wildcard(target_dim) or _is_assignable_var(dim, target_dim, variables):
             continue
@@ -128,7 +128,7 @@ def _check_dimensions_against_shape(shape: ShapeTuple, target: List[str]) -> boo
     return True
 
 
-def _handle_ellipsis(shape: ShapeTuple, target: List[str]) -> List[str]:
+def _handle_ellipsis(shape: ShapeTuple, target: list[str]) -> list[str]:
     # Let the ellipsis allows for any number of dimensions by replacing the
     # ellipsis with the dimension size repeated the number of times that
     # corresponds to the shape of the instance.
@@ -196,7 +196,7 @@ _REGEX_SHAPE_EXPRESSION = rf"^({_REGEX_DIMENSIONS}|{_REGEX_DIMENSIONS_ELLIPSIS})
 # --------------------------------------------------
 
 
-def _is_assignable_var(dim: str, target_dim: str, variables: Dict[str, str]) -> bool:
+def _is_assignable_var(dim: str, target_dim: str, variables: dict[str, str]) -> bool:
     # Return whether target_dim is a variable and can be assigned with dim.
     return _is_variable(target_dim) and _can_assign_variable(dim, target_dim, variables)
 
@@ -206,7 +206,7 @@ def _is_variable(dim: str) -> bool:
     return dim[0] in string.ascii_uppercase
 
 
-def _can_assign_variable(dim: str, target_dim: str, variables: Dict[str, str]) -> bool:
+def _can_assign_variable(dim: str, target_dim: str, variables: dict[str, str]) -> bool:
     # Check and assign a variable.
     assignable = variables.get(target_dim) in (None, dim)
     variables[target_dim] = dim

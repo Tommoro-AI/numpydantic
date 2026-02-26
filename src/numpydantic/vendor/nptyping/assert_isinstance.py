@@ -24,21 +24,19 @@ SOFTWARE.
 
 from typing import (
     Any,
-    Optional,
-    Type,
     TypeVar,
 )
 
 try:
     from typing import TypeGuard  # type: ignore[attr-defined]
 except ImportError:  # pragma: no cover
-    from typing_extensions import TypeGuard  # type: ignore[attr-defined]
+    from typing import TypeGuard  # type: ignore[attr-defined]
 
 TYPE = TypeVar("TYPE")
 
 
 def assert_isinstance(
-    instance: Any, cls: Type[TYPE], message: Optional[str] = None
+    instance: Any, cls: type[TYPE], message: str | None = None
 ) -> TypeGuard[TYPE]:
     """
     A TypeGuard function that is equivalent to `assert instance, cls, message`
