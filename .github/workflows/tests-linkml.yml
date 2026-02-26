@@ -41,8 +41,8 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
 
-      - name: Add checked out numpydantic to poetry deps
-        working-directory: linkml
+      - name: Add checked out numpydantic to uv deps
+        working-directory: linkml/packages/linkml
         run: uv add --editable '../numpydantic'
 
       - name: Install dependencies
