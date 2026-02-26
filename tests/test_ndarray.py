@@ -1,5 +1,5 @@
 import json
-from typing import Any, Optional, Union
+from typing import Any
 
 import numpy as np
 import pytest
@@ -18,7 +18,7 @@ from numpydantic.exceptions import DtypeError
 def test_ndarray_type():
     class Model(BaseModel):
         array: NDArray[Shape["2 x, * y"], Number]
-        array_any: Optional[NDArray[Any, Any]] = None
+        array_any: NDArray[Any, Any] | None = None
 
     schema = Model.model_json_schema()
     assert schema["properties"]["array"]["items"] == {
@@ -97,13 +97,12 @@ def test_ndarray_union():
     generator = np.random.default_rng()
 
     class Model(BaseModel):
-        array: Optional[
-            Union[
-                NDArray[Shape["* x, * y"], Number],
-                NDArray[Shape["* x, * y, 3 r_g_b"], Number],
-                NDArray[Shape["* x, * y, 3 r_g_b, 4 r_g_b_a"], Number],
-            ]
-        ] = Field(None)
+        array: (
+            NDArray[Shape["* x, * y"], Number]
+            | NDArray[Shape["* x, * y, 3 r_g_b"], Number]
+            | NDArray[Shape["* x, * y, 3 r_g_b, 4 r_g_b_a"], Number]
+            | None
+        ) = Field(None)
 
     _ = Model()
     _ = Model(array=generator.random((5, 10)))

@@ -3,7 +3,7 @@ Interface to support treating videos like arrays using OpenCV
 """
 
 from pathlib import Path
-from typing import Any, Literal, Optional, Tuple, Union
+from typing import Any, Literal
 
 import numpy as np
 from pydantic_core.core_schema import SerializationInfo
@@ -39,9 +39,7 @@ class VideoProxy:
     Passthrough proxy class to interact with videos as arrays
     """
 
-    def __init__(
-        self, path: Optional[Path] = None, video: Optional[VideoCapture] = None
-    ):
+    def __init__(self, path: Path | None = None, video: VideoCapture | None = None):
         if path is None and video is None:  # pragma: no cover
             raise ValueError(
                 "Need to either supply a path or an opened VideoCapture object"
@@ -94,7 +92,7 @@ class VideoProxy:
         return self._sample_frame
 
     @property
-    def shape(self) -> Tuple[int, ...]:
+    def shape(self) -> tuple[int, ...]:
         """
         Shape of video like
         ``(n_frames, height, width, channels)``
@@ -159,7 +157,7 @@ class VideoProxy:
         """Whole video as a numpy array"""
         return self[:]
 
-    def __getitem__(self, item: Union[int, slice, tuple]) -> np.ndarray:
+    def __getitem__(self, item: int | slice | tuple) -> np.ndarray:
         if isinstance(item, int):
             # want a single frame
             return self._get_frame(item)
@@ -196,7 +194,7 @@ class VideoProxy:
             else:  # pragma: no cover
                 raise ValueError(f"indices must be an int or a slice! got {item}")
 
-    def __setitem__(self, key: Union[int, slice], value: Union[int, float, np.ndarray]):
+    def __setitem__(self, key: int | slice, value: int | float | np.ndarray):
         raise NotImplementedError("Setting pixel values on videos is not supported!")
 
     def __getattr__(self, item: str):
@@ -266,7 +264,7 @@ class VideoInterface(Interface):
     @classmethod
     def to_json(
         cls, array: VideoProxy, info: SerializationInfo
-    ) -> Union[list, VideoJsonDict]:
+    ) -> list | VideoJsonDict:
         """Return a json-representation of a video"""
         if info.round_trip:
             return VideoJsonDict(type=cls.name, file=str(array.path))

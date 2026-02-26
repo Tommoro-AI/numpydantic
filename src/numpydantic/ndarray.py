@@ -13,7 +13,7 @@ Extension of nptyping NDArray for pydantic that allows for JSON-Schema serializa
 
 """
 
-from typing import TYPE_CHECKING, Any, Literal, Tuple, get_origin
+from typing import TYPE_CHECKING, Any, Literal, get_origin
 
 import numpy as np
 from pydantic import GetJsonSchemaHandler
@@ -176,7 +176,7 @@ class NDArray(NPTypingType, metaclass=NDArrayMeta):
         - https://docs.pydantic.dev/latest/usage/types/custom/#handling-third-party-types
     """
 
-    __args__: Tuple[ShapeType, DtypeType] = (Any, Any)
+    __args__: tuple[ShapeType, DtypeType] = (Any, Any)
 
     @classmethod
     def __get_pydantic_core_schema__(

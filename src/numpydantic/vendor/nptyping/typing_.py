@@ -23,19 +23,18 @@ SOFTWARE.
 """
 
 import sys
-from typing import Tuple, Union
 
 if sys.version_info.minor >= 10:
     from typing import TypeAlias
 else:
-    from typing_extensions import TypeAlias
+    from typing import TypeAlias
 
 import numpy as np
 
 ShapeExpression: TypeAlias = str
 StructureExpression: TypeAlias = str
-DType: TypeAlias = Union[np.generic, StructureExpression]
-ShapeTuple: TypeAlias = Tuple[int, ...]
+DType: TypeAlias = np.generic | StructureExpression
+ShapeTuple: TypeAlias = tuple[int, ...]
 
 Number = np.number
 Bool = np.bool_

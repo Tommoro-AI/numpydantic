@@ -1,5 +1,9 @@
 # Changelog
 
+## Upcoming
+
+- Drop support for python 3.9, add (testing) support for 3.14
+
 ## 1.*
 
 ### 1.7.*

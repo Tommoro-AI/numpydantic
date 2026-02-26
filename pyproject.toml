@@ -10,7 +10,7 @@ dependencies = [
     "numpy>=1.24.0",
     "typing-extensions>=4.11.0;python_version<'3.11'"
 ]
-requires-python = "<4.0,>=3.9"
+requires-python = "<4.0,>=3.10"
 readme = "README.md"
 repository = "https://github.com/p2p-ld/numpydantic"
 license = {text = "MIT"}
@@ -151,10 +151,10 @@ markers = [
 ]
 
 [tool.black]
-target-version = ["py39", "py310", "py311", "py312"]
+target-version = ["py310", "py311", "py312", "py313", "py314"]
 
 [tool.ruff]
-target-version = "py39"
+target-version = "py310"
 include = ["src/numpydantic/**/*.py", "tests/**/*.py", "pyproject.toml"]
 
 [tool.ruff.lint]
@@ -194,10 +194,6 @@ ignore = [
     "ANN401", "ANN204",
     # explicit strict arg for zip
     "B905",
-    # builtin type annotations
-    "UP006", "UP035",
-    # | for Union types (only supported >=3.10
-    "UP007", "UP038",
     # docstrings for __init__
     "D107",
 ]

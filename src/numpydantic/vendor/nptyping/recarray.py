@@ -23,7 +23,7 @@ SOFTWARE.
 """
 
 import inspect
-from typing import Any, Tuple
+from typing import Any
 
 import numpy as np
 
@@ -39,7 +39,7 @@ class RecArrayMeta(NDArrayMeta, implementation="RecArray"):
     from NDArrayMeta.
     """
 
-    def _get_item(cls, item: Any) -> Tuple[Any, ...]:
+    def _get_item(cls, item: Any) -> tuple[Any, ...]:
         cls._check_item(item)
         shape, dtype = cls._get_from_tuple(item)
         return shape, dtype

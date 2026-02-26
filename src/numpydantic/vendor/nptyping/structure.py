@@ -25,8 +25,6 @@ SOFTWARE.
 from abc import ABC
 from typing import (
     Any,
-    Dict,
-    List,
 )
 
 from numpydantic.vendor.nptyping.base_meta_classes import ContainerMeta
@@ -51,7 +49,7 @@ class StructureMeta(ContainerMeta, implementation="Structure"):
     def _normalize_expression(cls, item: str) -> str:
         return normalize_structure_expression(item)
 
-    def _get_additional_values(cls, item: Any) -> Dict[str, Any]:
+    def _get_additional_values(cls, item: Any) -> dict[str, Any]:
         return {
             "_type_per_name": create_name_to_type_dict(item),
             "_has_wildcard": item.replace(" ", "").endswith(",*"),
@@ -82,7 +80,7 @@ class Structure(NPTypingType, ABC, metaclass=StructureMeta):
         return cls._has_wildcard
 
     @classmethod
-    def get_types(cls) -> List[str]:
+    def get_types(cls) -> list[str]:
         """
         Return a list of all types (strings) in this Structure.
         :return: a list of all types in this Structure.
@@ -90,7 +88,7 @@ class Structure(NPTypingType, ABC, metaclass=StructureMeta):
         return list(set(cls._type_per_name.values()))
 
     @classmethod
-    def get_names(cls) -> List[str]:
+    def get_names(cls) -> list[str]:
         """
         Return a list of all names in this Structure.
         :return: a list of all names in this Structure.
