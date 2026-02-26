@@ -259,7 +259,6 @@ class VideoCase(InterfaceCase):
         frame_shape = shape[1:]
 
         video_path = path / "test.avi"
-        breakpoint()
         writer = cv2.VideoWriter(
             str(video_path),
             cv2.VideoWriter_fourcc(*"RGBA"),  # raw video for testing purposes
