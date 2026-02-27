@@ -1,10 +1,36 @@
 # Changelog
 
-## Upcoming
-
-- Drop support for python 3.9, add (testing) support for 3.14
-
 ## 1.*
+
+### 1.8.*
+
+#### 1.8.0 - 26-02-26
+
+**Version Support**
+
+- [#63](https://github.com/p2p-ld/numpydantic/pull/63) -
+  Drop support for python 3.9, add (testing) support for 3.14
+
+**Added**
+
+- [#41](https://github.com/p2p-ld/numpydantic/issues/41)
+  [#62](https://github.com/p2p-ld/numpydantic/issues/62)
+  [#64](https://github.com/p2p-ld/numpydantic/pull/64) -
+  Add a {func}`.NDArraySchema` Annotated style specification to support static type checkers:
+
+```python
+from numpydantic import NDArraySchema
+
+class MyModel(BaseModel):
+  array: Annotated[np.ndarray, NDArraySchema((1, 2, 3), np.uint8)]
+```
+
+- Allow shape to be used as a callable rather than a `[]` generic
+- Allow shape to accept shape arguments as `*args` rather than a single string
+
+**Testing**
+
+- Added pyright testing
 
 ### 1.7.*
 

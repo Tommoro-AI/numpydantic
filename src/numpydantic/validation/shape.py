@@ -42,20 +42,22 @@ from numpydantic.vendor.nptyping.typing_ import ShapeExpression, ShapeTuple
 T = TypeVar("T", bound=Literal[str])
 
 
-class ShapeMeta(ContainerMeta, implementation="Shape"):
+class ShapeMeta(ContainerMeta["Shape"], implementation="Shape"):
     """
     Metaclass that is coupled to nptyping.Shape.
 
     Overridden from nptyping to use local shape validation function
     """
 
-    def _validate_expression(cls, item: str) -> None:
-        validate_shape_expression(item)
+    def _validate_expression(cls, item: str) -> str:
+        return validate_shape_expression(item)
 
     def _normalize_expression(cls, item: str) -> str:
         return normalize_shape_expression(item)
 
     def _get_additional_values(cls, item: Any) -> dict[str, Any]:
+        if isinstance(item, tuple):
+            item = ", ".join(str(i) for i in item)
         dim_strings = get_dimensions(item)
         dim_string_without_labels = remove_labels(dim_strings)
         return {"prepared_args": dim_string_without_labels}
@@ -79,16 +81,34 @@ class Shape(NPTypingType, ABC, Generic[T], metaclass=ShapeMeta):
     >>> Shape['2, 2'] == Literal['2, 2']
     True
 
+    A Shape can be constructed by calling for type checker compatibility
+
+    >>> Shape['2, 2'] == Shape('2, 2')
+
+    And its arguments can be pased as *args, with ints and strings as appropriate
+
+    >>> Shape(2, 2, "...") == Shape("2, 2, ...")
+
     """
+
+    def __new__(cls, *args: str | int) -> type["Shape"]:
+        """Create a new Shape as a callable"""
+        return Shape[args]
 
     __args__ = ("*, ...",)
     prepared_args = ("*", "...")
 
 
-def validate_shape_expression(shape_expression: ShapeExpression | Any) -> None:
+def validate_shape_expression(
+    shape_expression: ShapeExpression | tuple[str, ...] | Any,
+) -> str:
     """
-    CHANGES FROM NPTYPING: Allow ranges
+    CHANGES FROM NPTYPING:
+    - Allow ranges
+    - Allow specifying as a tuple
     """
+    if isinstance(shape_expression, tuple):
+        shape_expression = ", ".join(str(term) for term in shape_expression)
     shape_expression_no_quotes = shape_expression.replace("'", "").replace('"', "")
     if shape_expression is not Any and not re.match(
         _REGEX_SHAPE_EXPRESSION, shape_expression_no_quotes
@@ -96,6 +116,7 @@ def validate_shape_expression(shape_expression: ShapeExpression | Any) -> None:
         raise InvalidShapeError(
             f"'{shape_expression}' is not a valid shape expression."
         )
+    return shape_expression
 
 
 @lru_cache

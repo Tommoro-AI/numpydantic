@@ -57,6 +57,23 @@ model = MyModel(array=('data.zarr', '/nested/dataset'))
 model = MyModel(array="data.mp4")
 ```
 
+Or, if you don't care about compatibility with multiple array backends and want explicit type checking,
+use numpydantic as an annotated type - 
+shapes and dtypes will still be validated by pydantic,
+but the rest of your code will just see the field as a normal array.
+
+```python
+from typing import Annotated as A
+from numpydantic import NDArraySchema
+
+class MyAnnotatedModel(BaseModel):
+    # shapes can also be specified in a functional form with (),
+    # and if you don't need labels, as separate arguments
+    array: A[np.ndarray, NDArraySchema(Shape(3, 4, 5, "..."), int)]
+    # or, throw out the shape object altogether!
+    array: A[np.ndarray, NDArraySchema((3, 4, 5, "..."), int)]
+```
+
 `numpydantic` supports pydantic but none of its behavior is dependent on it!
 Use the `NDArray` type annotation like a regular type outside
 of pydantic -- eg. to validate an array anywhere, use `isinstance`:
