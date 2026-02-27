@@ -1,4 +1,4 @@
-from typing import Annotated, reveal_type
+from typing import Annotated
 
 import numpy as np
 from pydantic import BaseModel
@@ -26,5 +26,3 @@ def needs_array(x: np.ndarray) -> np.ndarray:
 
 
 needs_array(instance.array)
-
-reveal_type(instance.array)
