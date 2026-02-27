@@ -27,12 +27,14 @@ from inspect import getframeinfo
 from types import FrameType
 from typing import (
     Any,
+    Generic,
     TypeVar,
 )
 
-from numpydantic.vendor.nptyping.error import InvalidArgumentsError, NPTypingError
+from numpydantic.vendor.nptyping.error import NPTypingError
 
 _T = TypeVar("_T")
+_TType = TypeVar("_TType", bound=type)
 
 
 class InconstructableMeta(ABCMeta):
@@ -100,7 +102,7 @@ class PrintableMeta(ABCMeta):
         return str(cls)
 
 
-class SubscriptableMeta(ABCMeta):
+class SubscriptableMeta(ABCMeta, Generic[_TType]):
     """
     Makes a class subscriptable: it accepts arguments between brackets and a
     new type is returned for every unique set of arguments.
@@ -129,7 +131,7 @@ class SubscriptableMeta(ABCMeta):
         # values that are to be set as attributes on the new type.
         return {}
 
-    def __getitem__(cls, item: Any) -> type:
+    def __getitem__(cls, item: Any) -> _TType:
         if getattr(cls, "_parameterized", False):
             raise NPTypingError(f"Type nptyping.{cls} is already parameterized.")
 
@@ -175,11 +177,10 @@ class ComparableByArgsMeta(ABCMeta):
 
 
 class ContainerMeta(
-    InconstructableMeta,
     FinalMeta,
     MaybeCheckableMeta,
     PrintableMeta,
-    SubscriptableMeta,
+    SubscriptableMeta[_TType],
     ComparableByArgsMeta,
     ABCMeta,
 ):
@@ -187,29 +188,24 @@ class ContainerMeta(
     Base meta class for "containers" such as Shape and Structure.
     """
 
-    _known_expressions: set[str] = set()
+    _known_expressions: dict[str, str | tuple] = dict()
     __args__: tuple[str, ...]
 
     @abstractmethod
-    def _validate_expression(cls, item: str) -> None: ...  # pragma: no cover
+    def _validate_expression(cls, item: str) -> str: ...  # pragma: no cover
 
     @abstractmethod
     def _normalize_expression(cls, item: str) -> str: ...  # pragma: no cover
 
     def _get_item(cls, item: Any) -> tuple[Any, ...]:
-        if not isinstance(item, str):
-            raise InvalidArgumentsError(
-                f"Unexpected argument of type {type(item)}, expecting a string."
-            )
-
         if item in cls._known_expressions:
             # No need to do costly validations and normalizations if it has been done
             # before.
-            return (item,)
+            return (cls._known_expressions[item],)
 
-        cls._validate_expression(item)
+        item = cls._validate_expression(item)
         norm_shape_expression = cls._normalize_expression(item)
-        cls._known_expressions.add(norm_shape_expression)
+        cls._known_expressions[item] = norm_shape_expression
         return (norm_shape_expression,)
 
     def __subclasscheck__(cls, subclass: Any) -> bool:
