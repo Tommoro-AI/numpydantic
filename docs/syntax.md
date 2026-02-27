@@ -29,7 +29,7 @@ Shape can also be invoked as a callable
 field: NDArray[Shape(1, 2, 3), dtype]
 ```
 
-If you don't need 
+If you don't need compatibility with multiple array backends,
 Within pydantic models, you can use the annotated schema form with :func:`.NDArraySchema`
 
 ```python

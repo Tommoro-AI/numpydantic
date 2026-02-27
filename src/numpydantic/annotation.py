@@ -26,22 +26,25 @@ def NDArraySchema(
 
     Examples:
 
-        from typing import Annotated as A
-        from numpydantic import Shape, NDArraySchema
-        import numpy as np
-        from pydantic import BaseModel
+        >>> from typing import Annotated as A
+        >>> from numpydantic import Shape, NDArraySchema
+        >>> import numpy as np
+        >>>f rom pydantic import BaseModel
 
-        class MyModel(BaseModel):
-            array: A[np.ndarray, NDArraySchema(Shape(3, 3), np.uint8)]
+        >>> class MyModel(BaseModel):
+        >>>     array: A[np.ndarray, NDArraySchema(Shape(3, 3), np.uint8)]
 
-        # or, without Shape
-        class MyOtherModel(BaseModel):
-            array: A[np.ndarray, NDArraySchema((3, 3), np.uint8)]
+        or, without Shape
+        
+        >>> class MyOtherModel(BaseModel):
+        >>>     array: A[np.ndarray, NDArraySchema((3, 3), np.uint8)]
 
-        # valid
+        Valid:
+        
         >>> MyModel(array=np.ones((3, 3), dtype=np.uint8))
 
-        # not valid
+        Not valid:
+        
         >>> MyModel(array=dask.array.ones((3, 3), dtype=np.uint8))
 
     Args:
