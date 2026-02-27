@@ -35,16 +35,16 @@ def NDArraySchema(
         >>>     array: A[np.ndarray, NDArraySchema(Shape(3, 3), np.uint8)]
 
         or, without Shape
-        
+
         >>> class MyOtherModel(BaseModel):
         >>>     array: A[np.ndarray, NDArraySchema((3, 3), np.uint8)]
 
         Valid:
-        
+
         >>> MyModel(array=np.ones((3, 3), dtype=np.uint8))
 
         Not valid:
-        
+
         >>> MyModel(array=dask.array.ones((3, 3), dtype=np.uint8))
 
     Args:
