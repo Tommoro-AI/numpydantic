@@ -29,7 +29,7 @@ def NDArraySchema(
         >>> from typing import Annotated as A
         >>> from numpydantic import Shape, NDArraySchema
         >>> import numpy as np
-        >>>f rom pydantic import BaseModel
+        >>> from pydantic import BaseModel
 
         >>> class MyModel(BaseModel):
         >>>     array: A[np.ndarray, NDArraySchema(Shape(3, 3), np.uint8)]
